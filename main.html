@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Slideshow Clicker</title>
+
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: white;
+                width: 100vw;
+                height: 100vh;
+            }
+
+            body.active {
+                background-color: #aaffad;
+            }
+        </style>
+    </head>
+
+    <body>
+        <script>
+            let socket = new WebSocket(`ws://${window.location.host}/press`);
+            socket.addEventListener("open", event => {
+                const UP = new ArrayBuffer(1);
+                (new Uint8Array(UP))[0] = 0;
+
+                const DOWN = new ArrayBuffer(1);
+                (new Uint8Array(DOWN))[0] = 1;
+
+                document.body.addEventListener("touchstart", e => {
+                    socket.send(DOWN);
+                    document.body.classList.add("active");
+                });
+
+                document.body.addEventListener("touchend", e => {
+                    socket.send(UP);
+                    document.body.classList.remove("active");
+                });
+
+                document.body.addEventListener("touchcancel", e => {
+                    socket.send(UP);
+                    document.body.classList.remove("active");
+                });
+            });
+        </script>
+    </body>
+</html>
